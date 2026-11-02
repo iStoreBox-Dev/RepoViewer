@@ -5,6 +5,6 @@ export default defineConfig({
   build: {
     outDir: 'dist',
     emptyOutDir: true,
-    rollupOptions: { input: { ipa: resolve(process.cwd(), 'ipa.html'), utilities: resolve(process.cwd(), 'utilities.html') } }
+    rollupOptions: { input: { app: resolve(process.cwd(), 'app.html'), ipa: resolve(process.cwd(), 'ipa.html'), utilities: resolve(process.cwd(), 'utilities.html') } }
   }
 });
