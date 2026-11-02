@@ -1,0 +1,17 @@
+{
+  "name": "repoviewer-web",
+  "private": true,
+  "version": "1.7.0",
+  "type": "module",
+  "scripts": {
+    "build": "vite build"
+  },
+  "dependencies": {
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "jszip": "^3.10.1"
+  },
+  "devDependencies": {
+    "vite": "^7.1.0"
+  }
+}
