@@ -6,8 +6,8 @@ const net = require('node:net');
 const fs = require('node:fs');
 const path = require('node:path');
 const PORT = Number(process.env.PORT || 3000);
-const APP_VERSION = '1.9.0';
-const BUILD_ID = '2026-11-02-unified-nav';
+const APP_VERSION = '2.0.0';
+const BUILD_ID = '2026-11-02-react-unification';
 console.log('[RepoViewer] Version '+APP_VERSION+' | Build '+BUILD_ID+' | Node '+process.version);
 const limit = 24 * 1024 * 1024; // JSON metadata, not IPA downloads
 const MAX_APPS = 10000;
@@ -69,8 +69,8 @@ async function fetchJson(raw, redirects=0){
     req.on('error',reject);
   });
 }
-const html=fs.readFileSync(path.join(__dirname,'public','index.html'));
-const toolsHtml=fs.readFileSync(path.join(__dirname,'public','tools.html'));
+const html=fs.readFileSync(path.join(__dirname,'dist','app.html'));
+const toolsHtml=html;
 const ipaHtml=fs.readFileSync(path.join(__dirname,'dist','ipa.html'));
 const utilitiesHtml=fs.readFileSync(path.join(__dirname,'dist','utilities.html'));
 http.createServer(async(req,res)=>{
