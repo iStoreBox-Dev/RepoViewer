@@ -1,6 +1,6 @@
 FROM node:22-alpine AS builder
 WORKDIR /build
-COPY package.json vite.config.js app.html ipa.html utilities.html ./
+COPY package.json vite.config.js app.html ipa.html utilities.html lab.html ./
 COPY src ./src
 RUN npm install --no-audit --no-fund && npm run build
 
