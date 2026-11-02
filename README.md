@@ -17,3 +17,12 @@ The browser requests JSON through a small built-in server endpoint to avoid CORS
 Direct link: `https://your-domain.example/?repo=https%3A%2F%2Fexample.com%2Fapps.json`
 
 Important: "Download IPA" is a download link; iOS may require a signing/sideloading tool. This app does not sign or install IPAs.
+
+## Community features (v1.0.4)
+- Shareable repository URLs with copy-link action.
+- One-tap SideStore source links (requires SideStore on device).
+- Category filters and name/release-date sorting.
+- Both AltStore standard and iPhone/iPad screenshot metadata.
+- Publisher-declared app entitlements and privacy explanations, with clear notice when metadata is missing.
+
+No database or user accounts are required. The versioned Compose image tag ensures Dockhand deploys a new build when the source changes.
