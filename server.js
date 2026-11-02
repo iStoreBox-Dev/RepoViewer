@@ -6,6 +6,9 @@ const net = require('node:net');
 const fs = require('node:fs');
 const path = require('node:path');
 const PORT = Number(process.env.PORT || 3000);
+const APP_VERSION = '1.0.2';
+const BUILD_ID = '2026-11-02-dnsfix-health';
+console.log('[RepoViewer] Version '+APP_VERSION+' | Build '+BUILD_ID+' | Node '+process.version);
 const limit = 2 * 1024 * 1024;
 const blocked = new net.BlockList();
 for (const [base, bits] of [
@@ -75,7 +78,7 @@ http.createServer(async(req,res)=>{
     try{return send(200,'application/json',JSON.stringify(await fetchJson(raw)));}
     catch(e){console.error('[repo-fetch]',new Date().toISOString(),e && e.stack || e);return send(400,'application/json',JSON.stringify({error:e.message}));}
   }
-  if(u.pathname==='/health')return send(200,'text/plain','ok');
+  if(u.pathname==='/health')return send(200,'text/plain','ok | RepoViewer '+APP_VERSION+' | '+BUILD_ID);
   if(u.pathname==='/' || u.pathname==='/index.html')return send(200,'text/html; charset=utf-8',html);
   return send(404,'text/plain','Not found');
-}).listen(PORT,'0.0.0.0',()=>console.log('RepoViewer on :'+PORT));
+}).listen(PORT,'0.0.0.0',()=>console.log('[RepoViewer] HTTP server listening on 0.0.0.0:'+PORT+' | version '+APP_VERSION+' | build '+BUILD_ID));
