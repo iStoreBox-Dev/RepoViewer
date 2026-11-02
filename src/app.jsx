@@ -1,4 +1,4 @@
-import React,{useEffect,useMemo,useState} from 'react';import{createRoot}from 'react-dom/client';import Nav from './Nav';import './ipa.css';
+import React,{useEffect,useMemo,useState} from 'react';import{createRoot}from 'react-dom/client';import Nav from './Nav';import './ipa.css';import './catalog.css';
 const DEFAULT='https://raw.githubusercontent.com/LiveContainer/LiveContainer/refs/heads/main/apps.json';
 const SOURCES=[['LiveContainer',DEFAULT],['SideStore','https://apps.sidestore.io/index.json'],['SideStore Community','https://community-apps.sidestore.io/sidecommunity.json'],['UTM','https://alt.getutm.app'],['DolphiniOS','https://altstore.oatmealdome.me'],['Flycast','https://flyinghead.github.io/flycast-builds/altstore.json']];
 const version=a=>a.versions?.[0]||a;
