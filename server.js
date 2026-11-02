@@ -6,10 +6,11 @@ const net = require('node:net');
 const fs = require('node:fs');
 const path = require('node:path');
 const PORT = Number(process.env.PORT || 3000);
-const APP_VERSION = '1.4.0';
-const BUILD_ID = '2026-11-02-marketplace-discovery';
+const APP_VERSION = '1.5.0';
+const BUILD_ID = '2026-11-02-large-source';
 console.log('[RepoViewer] Version '+APP_VERSION+' | Build '+BUILD_ID+' | Node '+process.version);
-const limit = 2 * 1024 * 1024;
+const limit = 24 * 1024 * 1024; // JSON metadata, not IPA downloads
+const MAX_APPS = 10000;
 const blocked = new net.BlockList();
 for (const [base, bits] of [
   ['0.0.0.0',8],['10.0.0.0',8],['100.64.0.0',10],['127.0.0.0',8],
@@ -58,10 +59,10 @@ async function fetchJson(raw, redirects=0){
         return resolve(fetchJson(new URL(loc,u).href,redirects+1));
       }
       if(res.statusCode!==200){res.resume();return reject(Error('Repository returned HTTP '+res.statusCode));}
-      if(Number(res.headers['content-length'])>limit){res.destroy();return reject(Error('Repository JSON is too large'));}
+      if(Number(res.headers['content-length'])>limit){res.destroy();return reject(Error('Repository JSON exceeds the 24 MB safety limit'));}
       let len=0;const chunks=[];
-      res.on('data',chunk=>{len+=chunk.length;if(len>limit){res.destroy();reject(Error('Repository JSON is too large'));}else chunks.push(chunk);});
-      res.on('end',()=>{try{const value=JSON.parse(Buffer.concat(chunks).toString('utf8'));if(!value || !Array.isArray(value.apps))throw Error('JSON must contain an apps array');resolve(value);}catch(e){reject(e);}});
+      res.on('data',chunk=>{len+=chunk.length;if(len>limit){res.destroy();reject(Error('Repository JSON exceeds the 24 MB safety limit'));}else chunks.push(chunk);});
+      res.on('end',()=>{try{const value=JSON.parse(Buffer.concat(chunks).toString('utf8'));if(!value || !Array.isArray(value.apps))throw Error('JSON must contain an apps array');if(value.apps.length>MAX_APPS)throw Error('Repository exceeds the 10,000 app safety limit');resolve(value);}catch(e){reject(e);}});
       res.on('error',reject);
     });
     req.on('timeout',()=>req.destroy(Error('Repository request timed out')));
