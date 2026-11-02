@@ -6,8 +6,8 @@ const net = require('node:net');
 const fs = require('node:fs');
 const path = require('node:path');
 const PORT = Number(process.env.PORT || 3000);
-const APP_VERSION = '1.7.0';
-const BUILD_ID = '2026-11-02-react-ipa';
+const APP_VERSION = '1.8.0';
+const BUILD_ID = '2026-11-02-more-tools';
 console.log('[RepoViewer] Version '+APP_VERSION+' | Build '+BUILD_ID+' | Node '+process.version);
 const limit = 24 * 1024 * 1024; // JSON metadata, not IPA downloads
 const MAX_APPS = 10000;
@@ -72,6 +72,7 @@ async function fetchJson(raw, redirects=0){
 const html=fs.readFileSync(path.join(__dirname,'public','index.html'));
 const toolsHtml=fs.readFileSync(path.join(__dirname,'public','tools.html'));
 const ipaHtml=fs.readFileSync(path.join(__dirname,'dist','ipa.html'));
+const utilitiesHtml=fs.readFileSync(path.join(__dirname,'dist','utilities.html'));
 http.createServer(async(req,res)=>{
   const send=(status,type,data)=>{res.writeHead(status,{'Content-Type':type,'X-Content-Type-Options':'nosniff','Referrer-Policy':'no-referrer','Cache-Control':'no-store','Content-Security-Policy':"default-src 'self'; img-src 'self' https: data:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; connect-src 'self'; base-uri 'none'; object-src 'none'"});res.end(data)};
   const u=new URL(req.url,'http://localhost');
@@ -81,6 +82,7 @@ http.createServer(async(req,res)=>{
     try{return send(200,'application/json',JSON.stringify(await fetchJson(raw)));}
     catch(e){console.error('[repo-fetch]',new Date().toISOString(),e && e.stack || e);return send(400,'application/json',JSON.stringify({error:e.message}));}
   }
+  if(u.pathname==='/utilities' || u.pathname==='/utilities.html')return send(200,'text/html; charset=utf-8',utilitiesHtml);
   if(u.pathname==='/ipa' || u.pathname==='/ipa.html')return send(200,'text/html; charset=utf-8',ipaHtml);
   if(u.pathname.startsWith('/assets/')){
     const filename=path.basename(u.pathname);
