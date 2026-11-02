@@ -1,12 +1,12 @@
 <!doctype html>
 <html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#111427"><title>RepoViewer | App Repository Browser</title>
 <style>
-:root{font-family:Inter,system-ui,-apple-system,sans-serif;color:#e8eaf7;background:#0c101b}*{box-sizing:border-box}body{margin:0}a{color:inherit}button,input{font:inherit}button{cursor:pointer}.wrap{max-width:1020px;margin:auto;padding:24px 18px 64px}.header{display:flex;align-items:center;gap:12px;margin-bottom:36px}.brand{font-size:19px;font-weight:800}.brandicon{width:37px;height:37px;border-radius:12px;background:#7759eb;display:grid;place-items:center}.tag{margin-left:auto;font-size:11px;color:#adb6cc;border:1px solid #353e56;border-radius:99px;padding:7px 12px}.eyebrow{font-size:11px;color:#bba8ff;letter-spacing:2px;font-weight:800;text-transform:uppercase}h1{font-size:clamp(27px,5vw,42px);margin:8px 0;letter-spacing:-1.2px}p{line-height:1.55}.muted{color:#a4aec5}.panel,.card,.fact,.version{background:#171e2d;border:1px solid #313a50;border-radius:15px}.panel{padding:20px;margin-top:22px}.form{display:flex;gap:10px;margin-top:12px}input{background:#101626;color:white;border:1px solid #3a4661;border-radius:10px;padding:13px;min-width:0;flex:1;outline:none}input:focus{border-color:#967bff}.primary,.download{background:#785af0;border:0;color:white;padding:12px 17px;border-radius:10px;font-weight:700;text-decoration:none;display:inline-block}.primary:disabled{opacity:.55}.error{display:none;background:#4b2633;color:#ffced8;padding:12px;border-radius:10px;margin-top:12px}.repohead{display:flex;align-items:center;gap:16px;margin:28px 0 20px}.repohead img{width:65px;height:65px;object-fit:cover;border-radius:15px;background:#29354c}.repohead h2{margin:0 0 5px}.searchbar{display:flex;align-items:center;gap:14px;margin-bottom:15px}.searchbar span{font-size:12px;white-space:nowrap;color:#a4aec5}.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(245px,1fr));gap:14px}.card{padding:17px;display:flex;flex-direction:column;gap:13px}.cardhead{display:flex;gap:12px;align-items:center}.appicon{width:59px;height:59px;border-radius:14px;object-fit:cover;background:#33405b}.appname{font-weight:800;font-size:15px}.small{font-size:12px;color:#9ca8c0}.card p{font-size:13px;color:#b9c3d5;flex:1;margin:0}.outline{border:1px solid #6b54b5;background:#2c244a;color:#cfbfff;font-weight:700;border-radius:9px;padding:10px}.hidden{display:none!important}.back{border:0;background:none;color:#c4b2ff;font-weight:750;padding:12px 0}.detailhero{display:flex;gap:18px;align-items:center;margin:18px 0 25px}.detailhero img{width:98px;height:98px;border-radius:22px;object-fit:cover}.detailhero h2{font-size:28px;margin:0 0 7px}.facts{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.fact{padding:16px}.fact strong{display:block;margin-top:7px}.sectiontitle{font-size:17px;margin:27px 0 12px}.screens{display:flex;gap:12px;overflow-x:auto}.screens img{max-width:215px;height:300px;object-fit:contain;border-radius:12px;background:#1a2434}.versions{display:grid;gap:10px}.version{padding:15px;display:flex;gap:12px;align-items:center;justify-content:space-between}.release{white-space:pre-wrap;font-size:12px;color:#bac4d7;margin-top:6px}.footer{margin-top:32px;font-size:11px;color:#8896ae}.empty{text-align:center;padding:25px;color:#a4aec5}@media(max-width:600px){.wrap{padding:17px 15px 60px}.tag{display:none}.form{flex-direction:column}.repohead h2{font-size:21px}.facts{gap:6px}.fact{padding:12px;font-size:12px}.detailhero img{width:76px;height:76px}.detailhero h2{font-size:23px}.version{flex-wrap:wrap}}
+:root{font-family:Inter,system-ui,-apple-system,sans-serif;color:#e8eaf7;background:#0c101b}*{box-sizing:border-box}body{margin:0}a{color:inherit}button,input{font:inherit}button{cursor:pointer}.wrap{max-width:1020px;margin:auto;padding:24px 18px 64px}.header{display:flex;align-items:center;gap:12px;margin-bottom:36px}.brand{font-size:19px;font-weight:800}.brandicon{width:37px;height:37px;border-radius:12px;background:#7759eb;display:grid;place-items:center}.tag{margin-left:auto;font-size:11px;color:#adb6cc;border:1px solid #353e56;border-radius:99px;padding:7px 12px}.eyebrow{font-size:11px;color:#bba8ff;letter-spacing:2px;font-weight:800;text-transform:uppercase}h1{font-size:clamp(27px,5vw,42px);margin:8px 0;letter-spacing:-1.2px}p{line-height:1.55}.muted{color:#a4aec5}.panel,.card,.fact,.version{background:#171e2d;border:1px solid #313a50;border-radius:15px}.panel{padding:20px;margin-top:22px}.form{display:flex;gap:10px;margin-top:12px}input{background:#101626;color:white;border:1px solid #3a4661;border-radius:10px;padding:13px;min-width:0;flex:1;outline:none}input:focus{border-color:#967bff}.primary,.download{background:#785af0;border:0;color:white;padding:12px 17px;border-radius:10px;font-weight:700;text-decoration:none;display:inline-block}.primary:disabled{opacity:.55}.error{display:none;background:#4b2633;color:#ffced8;padding:12px;border-radius:10px;margin-top:12px}.repohead{display:flex;align-items:center;gap:16px;margin:28px 0 20px}.repohead img{width:65px;height:65px;object-fit:cover;border-radius:15px;background:#29354c}.repohead h2{margin:0 0 5px}.searchbar{display:flex;align-items:center;gap:14px;margin-bottom:15px}.searchbar span{font-size:12px;white-space:nowrap;color:#a4aec5}.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(245px,1fr));gap:14px}.card{padding:17px;display:flex;flex-direction:column;gap:13px}.cardhead{display:flex;gap:12px;align-items:center}.appicon{width:59px;height:59px;border-radius:14px;object-fit:cover;background:#33405b}.appname{font-weight:800;font-size:15px}.small{font-size:12px;color:#9ca8c0}.card p{font-size:13px;color:#b9c3d5;flex:1;margin:0}.outline{border:1px solid #6b54b5;background:#2c244a;color:#cfbfff;font-weight:700;border-radius:9px;padding:10px}.hidden{display:none!important}.back{border:0;background:none;color:#c4b2ff;font-weight:750;padding:12px 0}.detailhero{display:flex;gap:18px;align-items:center;margin:18px 0 25px}.detailhero img{width:98px;height:98px;border-radius:22px;object-fit:cover}.detailhero h2{font-size:28px;margin:0 0 7px}.facts{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.fact{padding:16px}.fact strong{display:block;margin-top:7px}.sectiontitle{font-size:17px;margin:27px 0 12px}.screens{display:flex;gap:12px;overflow-x:auto}.screens img{max-width:215px;height:300px;object-fit:contain;border-radius:12px;background:#1a2434}.versions{display:grid;gap:10px}.version{padding:15px;display:flex;gap:12px;align-items:center;justify-content:space-between}.release{white-space:pre-wrap;font-size:12px;color:#bac4d7;margin-top:6px}.tools{display:flex;gap:9px;flex-wrap:wrap;margin:4px 0 18px}.tool{border:1px solid #485270;border-radius:9px;background:#222d42;color:#e1e7fa;padding:10px 13px;font-weight:650;font-size:12px}.tool:hover{border-color:#a78bfa}.controls{display:flex;gap:9px;flex-wrap:wrap;margin-bottom:15px}.controls select{background:#171e2d;color:#e8eaf7;border:1px solid #3a4661;border-radius:9px;padding:10px;max-width:100%}.notice{font-size:12px;color:#c3cce1;background:#212a3d;padding:12px;border-radius:10px;line-height:1.5}.footer{margin-top:32px;font-size:11px;color:#8896ae}.empty{text-align:center;padding:25px;color:#a4aec5}@media(max-width:600px){.wrap{padding:17px 15px 60px}.tag{display:none}.form{flex-direction:column}.repohead h2{font-size:21px}.facts{gap:6px}.fact{padding:12px;font-size:12px}.detailhero img{width:76px;height:76px}.detailhero h2{font-size:23px}.version{flex-wrap:wrap}}
 </style></head><body><div class="wrap">
 <header class="header"><div class="brandicon">✦</div><div class="brand">RepoViewer</div><div class="tag">Simple iOS repository viewer</div></header>
 <main id="home"><div class="eyebrow">Explore repositories</div><h1>Preview apps before you install.</h1><p class="muted">Enter an AltStore-compatible JSON repository URL to explore the apps, versions, screenshots and download links. No login needed.</p>
 <section class="panel"><label for="url"><strong>Repository JSON URL</strong></label><form id="form" class="form"><input type="url" id="url" required placeholder="https://example.com/apps.json" value="https://mikevillarroel.github.io/mikebuilds-source/originals.json"><button id="load" class="primary">Load repository</button></form><div class="error" id="error" role="alert"></div></section>
-<section id="catalog" class="hidden"><div class="repohead"><img id="sourceicon" alt=""><div><h2 id="reponame"></h2><div id="reposub" class="muted"></div></div></div><div class="searchbar"><input id="search" type="search" placeholder="Search applications..." aria-label="Search apps"><span id="count"></span></div><div id="apps" class="grid"></div></section></main>
+<section id="catalog" class="hidden"><div class="repohead"><img id="sourceicon" alt=""><div><h2 id="reponame"></h2><div id="reposub" class="muted"></div></div></div><div class="tools"><button class="tool" id="share">Copy repository link</button><a id="sidestore" class="tool" href="#" style="text-decoration:none">Add to SideStore ↗</a><a id="rawsource" class="tool" href="#" target="_blank" rel="noopener noreferrer" style="text-decoration:none">View source JSON ↗</a></div><div class="searchbar"><input id="search" type="search" placeholder="Search applications..." aria-label="Search apps"><span id="count"></span></div><div class="controls"><select id="category" aria-label="Filter category"><option value="">All categories</option></select><select id="sort" aria-label="Sort applications"><option value="default">Source order</option><option value="name">Name A–Z</option><option value="recent">Latest releases</option></select></div><div id="apps" class="grid"></div></section></main>
 <section id="detail" class="hidden"></section><footer class="footer">App downloads are provided by external repository owners. An unsigned IPA requires a compatible installation/signing tool. Only install software from sources you trust.</footer></div>
 <script>
 (()=>{'use strict';
@@ -17,10 +17,20 @@ const url=v=>{try{const u=new URL(v);return u.protocol==='https:'||u.protocol===
 const img=(src,cls)=>{const e=elt('img',cls);e.alt='';e.loading='lazy';e.referrerPolicy='no-referrer';if(url(src))e.src=url(src);return e};
 const mb=v=>Number.isFinite(Number(v))?(Number(v)/1048576).toFixed(1)+' MB':'—';
 const newest=a=>Array.isArray(a.versions)?a.versions[0]||{}:{};
+const dateOf=a=>{const t=Date.parse(newest(a).date||'');return Number.isFinite(t)?t:0};
+const categoryName=v=>String(v||'Other').replace(/[-_]/g,' ').replace(/\b\w/g,c=>c.toUpperCase());
+const screenshotURLs=a=>{
+ const source=a.screenshots||a.screenshotURLs||[];
+ const entries=Array.isArray(source)?source:[...(source.iphone||[]),...(source.ipad||[])];
+ return entries.map(v=>typeof v==='string'?v:v&&v.imageURL).filter(url);
+};
 function list(){
  const panel=$('apps');panel.replaceChildren();
  const q=$('search').value.trim().toLowerCase();
- const found=repo.apps.map((a,index)=>({a,index})).filter(({a})=>[a.name,a.subtitle,a.developerName,a.category].join(' ').toLowerCase().includes(q));
+ const category=$('category').value;
+ const found=repo.apps.map((a,index)=>({a,index})).filter(({a})=>(!category||a.category===category)&&[a.name,a.subtitle,a.developerName,a.category].join(' ').toLowerCase().includes(q));
+ if($('sort').value==='name')found.sort((x,y)=>(x.a.name||'').localeCompare(y.a.name||''));
+ if($('sort').value==='recent')found.sort((x,y)=>dateOf(y.a)-dateOf(x.a));
  $('count').textContent=found.length+' apps';
  if(!found.length){panel.append(elt('div','empty','No matching apps found.'));return;}
  for(const {a,index} of found){
@@ -45,7 +55,17 @@ function detail(index){
  const box=elt('div','fact');put(box,elt('div','small',label),elt('strong','',value));facts.append(box);
  }
  root.append(facts,elt('h3','sectiontitle','About this app'),elt('p','muted',a.localizedDescription||a.subtitle||'No description provided.'));
- const shots=Array.isArray(a.screenshotURLs)?a.screenshotURLs.filter(url):[];
+ if(a.bundleIdentifier)root.append(elt('p','small','Bundle ID: '+a.bundleIdentifier));
+ const perms=a.appPermissions||{};
+ if((Array.isArray(perms.entitlements)&&perms.entitlements.length)||(perms.privacy&&Object.keys(perms.privacy).length)){
+  root.append(elt('h3','sectiontitle','Declared app permissions'));
+  const box=elt('div','panel');box.style.marginTop='0';
+  if(Array.isArray(perms.entitlements)&&perms.entitlements.length)box.append(elt('p','small','Entitlements: '+perms.entitlements.join(', ')));
+  for(const [key,why] of Object.entries(perms.privacy||{}))box.append(elt('p','small',key+': '+String(why)));
+  box.append(elt('p','small','Declared by the repository publisher; not independently verified.'));
+  root.append(box);
+ }else root.append(elt('p','notice','This repository does not provide app permission details. This does not mean the app requests no permissions.'));
+ const shots=screenshotURLs(a);
  if(shots.length){root.append(elt('h3','sectiontitle','Screenshots'));const strip=elt('div','screens');for(const s of shots.slice(0,15))strip.append(img(s,''));root.append(strip);}
  root.append(elt('h3','sectiontitle','Version history'));
  const vers=elt('div','versions');
@@ -70,6 +90,16 @@ async function load(){
  repo=data;$('reponame').textContent=data.name||'App Repository';
  $('reposub').textContent=data.subtitle||data.description||'';
  const old=$('sourceicon'),next=img(data.iconURL,'');next.id='sourceicon';old.replaceWith(next);
+ const categories=[...new Set(data.apps.map(a=>a.category).filter(Boolean))].sort();
+ $('category').replaceChildren(new Option('All categories',''),...categories.map(c=>new Option(categoryName(c),c)));
+ $('sort').value='default';
+ const share=new URL(location.href);share.searchParams.set('repo',raw);share.hash='';
+ $('share').onclick=async()=>{
+  try{await navigator.clipboard.writeText(share.href);$('share').textContent='Copied!';setTimeout(()=>$('share').textContent='Copy repository link',1800)}
+  catch{prompt('Copy this repository link:',share.href)}
+ };
+ $('sidestore').href='sidestore://source?url='+encodeURIComponent(raw);
+ $('rawsource').href=raw;
  $('catalog').classList.remove('hidden');$('search').value='';list();back();
  $('catalog').scrollIntoView({behavior:'smooth',block:'start'});
  }catch(e){error.textContent=e.message;error.style.display='block'}
@@ -77,6 +107,8 @@ async function load(){
 }
 $('form').addEventListener('submit',e=>{e.preventDefault();load()});
 $('search').addEventListener('input',list);
+$('category').addEventListener('change',list);
+$('sort').addEventListener('change',list);
 const initial=new URL(location.href).searchParams.get('repo');if(initial){$('url').value=initial;load();}
 })();
 </script></body></html>
