@@ -38,7 +38,13 @@ async function fetchJson(raw, redirects=0){
       dns.lookup(hostname,{all:true,verbatim:true},(err,addresses)=>{
         if(err)return cb(err);
         if(!addresses.length || addresses.some(a=>!safeIP(a.address))) return cb(Error('Blocked private/internal network address'));
-        const one=addresses[0]; cb(null,one.address,one.family);
+        // Node 20+ may request all DNS results for autoSelectFamily.
+        // Returning a scalar in that case causes "Invalid IP address: undefined".
+        if(options && options.all) return cb(null,addresses);
+        const family=options && options.family;
+        const one=addresses.find(a=>!family || a.family===family);
+        if(!one) return cb(Error('No DNS address matches requested family'));
+        cb(null,one.address,one.family);
       });
     };
     const transport=u.protocol==='https:'?https:http;
@@ -67,7 +73,7 @@ http.createServer(async(req,res)=>{
   if(u.pathname==='/api/repo'){
     const raw=u.searchParams.get('url');if(!raw || raw.length>2048)return send(400,'application/json',JSON.stringify({error:'Enter a valid repository URL'}));
     try{return send(200,'application/json',JSON.stringify(await fetchJson(raw)));}
-    catch(e){return send(400,'application/json',JSON.stringify({error:e.message}));}
+    catch(e){console.error('[repo-fetch]',new Date().toISOString(),e && e.stack || e);return send(400,'application/json',JSON.stringify({error:e.message}));}
   }
   if(u.pathname==='/health')return send(200,'text/plain','ok');
   if(u.pathname==='/' || u.pathname==='/index.html')return send(200,'text/html; charset=utf-8',html);
