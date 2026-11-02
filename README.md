@@ -38,3 +38,7 @@ The toolkit does not request private keys, collect uploaded profile files, or re
 Open `/ipa` from the iOS Toolkit. React and Vite are built in the Docker multi-stage build, and the existing Node server hosts the generated page and assets in the **same single container**. No database, upload server, or persistent volume is added.
 
 The inspector reads a user-selected IPA locally using JSZip, lists bundle files, identifies the embedded provisioning-file presence, and reads **XML** `Payload/*.app/Info.plist` metadata. Binary plist detection is displayed transparently; binary plist decoding, signing verification, entitlement validation and IPA editing are **not supported yet**. Large files may consume browser memory: there is a 1 GB input cap, 30,000-entry cap and 2 MB metadata-entry cap. Do not trust repository metadata as proof of a safe or valid signature.
+
+## Developer Utilities (v1.8.0)
+
+Open `/utilities` for React-based XML plist inspection, SHA-256 file hashing, OTA manifest creation, and a privacy manifest starter template. Files are processed locally in the browser. OTA manifests require separately signed IPA assets; generated metadata is not signing or an install guarantee. These tools do not verify signatures or malware.
