@@ -26,3 +26,9 @@ Important: "Download IPA" is a download link; iOS may require a signing/sideload
 - Publisher-declared app entitlements and privacy explanations, with clear notice when metadata is missing.
 
 No database or user accounts are required. The versioned Compose image tag ensures Dockhand deploys a new build when the source changes.
+
+## iOS Toolkit (v1.6.0)
+
+Open `/tools` for four utilities: a locally generated unsigned Web Clip `.mobileconfig`, an unsigned XML configuration-profile inspector, an AltStore repository JSON checker, and curated SSL/certificate resources. Tools operate in the browser. Signed CMS and binary plist inspection, certificate signing, and profile encryption are not implemented; do not describe them as supported.
+
+The toolkit does not request private keys, collect uploaded profile files, or replace Apple's profile signing/trust verification. Use Dockhand to redeploy the `repoviewer:1.6.0` image from the latest `main` branch.
