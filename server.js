@@ -6,8 +6,8 @@ const net = require('node:net');
 const fs = require('node:fs');
 const path = require('node:path');
 const PORT = Number(process.env.PORT || 3000);
-const APP_VERSION = '2.1.0';
-const BUILD_ID = '2026-11-02-appstore-lab';
+const APP_VERSION = '2.2.0';
+const BUILD_ID = '2026-11-02-download-options';
 console.log('[RepoViewer] Version '+APP_VERSION+' | Build '+BUILD_ID+' | Node '+process.version);
 const limit = 24 * 1024 * 1024; // JSON metadata, not IPA downloads
 const MAX_APPS = 10000;
