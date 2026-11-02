@@ -1,6 +1,9 @@
 services:
   repoviewer:
-    build: .
+    image: repoviewer:1.0.3
+    build:
+      context: .
+      dockerfile: Dockerfile
     container_name: repoviewer
     restart: unless-stopped
     ports:
