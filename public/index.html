@@ -19,15 +19,21 @@ body{background:radial-gradient(circle at 80% -8%,#283b5b88,transparent 30%),var
 .searchbar input,.controls select{background:#131c28;border-color:#3b4c62}.card{background:#141d29;border-color:#304052;position:relative;padding:19px;min-height:245px}.card:hover{background:#1b2839;border-color:#789ac8}.appicon{width:67px;height:67px;border-radius:17px}.appname{font-size:17px}.type-badge{color:#a6bbd6;font-size:10px;text-transform:uppercase;letter-spacing:1.1px;font-weight:800}.card-actions{display:flex;align-items:center;gap:7px}.card-actions .outline{flex:1}.card-download{border-radius:9px;background:#b8d7ff;color:#14243a;text-decoration:none;padding:11px 12px;font-size:12px;font-weight:800;white-space:nowrap}.card-download:hover{background:#dcecff}.catalog-note{margin-top:25px;color:#9cabc0;font-size:12px}.notice{background:#253349;color:#c7d6e9}.back{color:#bad7ff}.quick-source,.tool,.outline,.card-download,.card{transition-duration:.2s}.card:focus-within{border-color:#a5c9ff}
 @media(max-width:700px){.header{margin-bottom:36px}.header-link{display:none}.featured{padding:23px;min-height:195px}.feature-icon{width:104px;height:104px;border-radius:25px}.feature-copy{max-width:75%}.feature-copy h3{font-size:28px}.browse-title span{display:none}}
 @media(max-width:480px){h1{font-size:43px}.panel{padding:17px}.featured{padding:18px;min-height:178px}.feature-icon{width:76px;height:76px;border-radius:18px;transform:rotate(6deg)}.feature-copy{max-width:75%}.feature-copy h3{font-size:25px}.feature-copy p{font-size:12px}.featured .primary{font-size:12px;padding:10px 12px}.card-actions{flex-wrap:wrap}.card-actions .outline,.card-download{flex:1;text-align:center}.section-kicker{font-size:9px}}
-</style></head><body><div class="wrap">
+</style><style>.fav-action{background:transparent;border:1px solid #60728c;color:#d5e3f8;border-radius:9px;padding:10px;font-size:12px;font-weight:750}.fav-action:hover{background:#273b51}#favorite-filter[aria-pressed=true]{background:#354966;border-color:#9bb9e7}.card-actions{flex-wrap:wrap}.card-actions .outline{flex:1;min-width:110px}.fav-action{min-height:40px}</style></head><body><div class="wrap">
 <header class="header"><div class="brandicon" aria-hidden="true">◈</div><div class="brand">RepoViewer<span class="brand-dot">.</span></div><div class="tag">Independent iOS, beautifully explored</div><a class="header-link" href="#catalog">Explore apps ↓</a></header>
 <main id="home"><div class="eyebrow">Independent apps · one beautiful place</div><h1>Good apps deserve<br><span class="hero-accent">a closer look.</span></h1><p class="muted intro">Enter an AltStore-compatible JSON repository URL to explore the apps, versions, screenshots and download links. No login needed.</p>
 <section class="panel"><label for="url"><strong>Repository JSON URL</strong></label><form id="form" class="form"><input type="url" id="url" required placeholder="https://example.com/apps.json" value="https://raw.githubusercontent.com/LiveContainer/LiveContainer/refs/heads/main/apps.json"><button id="load" class="primary">Load repository</button></form><div class="error" id="error" role="alert"></div><div class="quick-label">QUICK LOAD · COMMUNITY SOURCES</div><div class="quick-list" id="quick-sources" aria-label="Quick load repositories"></div></section>
-<section id="catalog" class="hidden"><div class="section-kicker">CURRENT COLLECTION <span id="source-status">● LIVE SOURCE</span></div><div class="repohead"><img id="sourceicon" alt=""><div><h2 id="reponame"></h2><div id="reposub" class="muted"></div></div></div><div class="tools"><button class="tool" id="share">Copy repository link</button><a id="sidestore" class="tool" href="#" style="text-decoration:none">Add to SideStore ↗</a><a id="rawsource" class="tool" href="#" target="_blank" rel="noopener noreferrer" style="text-decoration:none">View source JSON ↗</a></div><div id="featured" class="featured"></div><div class="browse-title"><h3>Browse the collection</h3><span>Find something worth trying</span></div><div class="searchbar"><input id="search" type="search" placeholder="Search applications..." aria-label="Search apps"><span id="count"></span></div><div class="controls"><select id="category" aria-label="Filter category"><option value="">All categories</option></select><select id="sort" aria-label="Sort applications"><option value="default">Source order</option><option value="name">Name A–Z</option><option value="recent">Latest releases</option></select></div><div id="apps" class="grid"></div><div class="catalog-note">Information is supplied by each repository publisher. Check details before downloading.</div></section></main>
+<section id="catalog" class="hidden"><div class="section-kicker">CURRENT COLLECTION <span id="source-status">● LIVE SOURCE</span></div><div class="repohead"><img id="sourceicon" alt=""><div><h2 id="reponame"></h2><div id="reposub" class="muted"></div></div></div><div class="tools"><button class="tool" id="share">Copy repository link</button><a id="sidestore" class="tool" href="#" style="text-decoration:none">Add to SideStore ↗</a><a id="rawsource" class="tool" href="#" target="_blank" rel="noopener noreferrer" style="text-decoration:none">View source JSON ↗</a></div><div id="featured" class="featured"></div><div class="browse-title"><h3>Browse the collection</h3><span>Find something worth trying</span></div><div class="searchbar"><input id="search" type="search" placeholder="Search applications..." aria-label="Search apps"><span id="count"></span></div><div class="controls"><button class="tool" id="favorite-filter" type="button" aria-pressed="false">♡ Favorites</button><select id="category" aria-label="Filter category"><option value="">All categories</option></select><select id="sort" aria-label="Sort applications"><option value="default">Source order</option><option value="name">Name A–Z</option><option value="recent">Latest releases</option></select></div><div id="apps" class="grid"></div><div class="catalog-note">Information is supplied by each repository publisher. Check details before downloading.</div></section></main>
 <section id="detail" class="hidden"></section><footer class="footer">App downloads are provided by external repository owners. An unsigned IPA requires a compatible installation/signing tool. Only install software from sources you trust.</footer></div>
 <script>
 (()=>{'use strict';
-const $=id=>document.getElementById(id);let repo=null;
+const $=id=>document.getElementById(id);let repo=null;let favoritesOnly=false;
+const FAVORITES_KEY='repoviewer:favorites';
+function readFavorites(){try{return new Set(JSON.parse(localStorage.getItem(FAVORITES_KEY)||'[]'))}catch{return new Set()}}
+let favorites=readFavorites();
+function favoriteKey(a){return String(a.bundleIdentifier||a.name||'')}
+function toggleFavorite(a){const k=favoriteKey(a);if(favorites.has(k))favorites.delete(k);else favorites.add(k);try{localStorage.setItem(FAVORITES_KEY,JSON.stringify([...favorites]))}catch{}list()}
+
 const DEFAULT_REPO='https://raw.githubusercontent.com/LiveContainer/LiveContainer/refs/heads/main/apps.json';
 const STORAGE_KEY='repoviewer:last-repo';
 const QUICK_SOURCES=[
@@ -48,7 +54,7 @@ const put=(p,...children)=>{p.append(...children);return p};
 const url=v=>{try{const u=new URL(v);return u.protocol==='https:'||u.protocol==='http:'?u.href:''}catch{return ''}};
 const img=(src,cls)=>{const e=elt('img',cls);e.alt='';e.loading='lazy';e.referrerPolicy='no-referrer';if(url(src))e.src=url(src);return e};
 const mb=v=>Number.isFinite(Number(v))?(Number(v)/1048576).toFixed(1)+' MB':'—';
-const newest=a=>Array.isArray(a.versions)?a.versions[0]||{}:{};
+const newest=a=>{const v=Array.isArray(a.versions)?a.versions[0]||{}:{};return {version:v.version||a.version||a.marketingVersion, minOSVersion:v.minOSVersion||a.minOSVersion, size:v.size??a.size, date:v.date||a.versionDate, downloadURL:v.downloadURL||a.downloadURL, localizedDescription:v.localizedDescription||a.versionDescription}};
 const dateOf=a=>{const t=Date.parse(newest(a).date||'');return Number.isFinite(t)?t:0};
 const categoryName=v=>String(v||'Other').replace(/[-_]/g,' ').replace(/\b\w/g,c=>c.toUpperCase());
 const screenshotURLs=a=>{
@@ -60,7 +66,7 @@ function list(){
  const panel=$('apps');panel.replaceChildren();
  const q=$('search').value.trim().toLowerCase();
  const category=$('category').value;
- const found=repo.apps.map((a,index)=>({a,index})).filter(({a})=>(!category||a.category===category)&&[a.name,a.subtitle,a.developerName,a.category].join(' ').toLowerCase().includes(q));
+ const found=repo.apps.map((a,index)=>({a,index})).filter(({a})=>(!category||a.category===category)&&(!favoritesOnly||favorites.has(favoriteKey(a)))&&[a.name,a.subtitle,a.developerName,a.category].join(' ').toLowerCase().includes(q));
  if($('sort').value==='name')found.sort((x,y)=>(x.a.name||'').localeCompare(y.a.name||''));
  if($('sort').value==='recent')found.sort((x,y)=>dateOf(y.a)-dateOf(x.a));
  $('count').textContent=found.length+' apps';
@@ -72,7 +78,7 @@ function list(){
  put(labels,elt('div','appname',a.name||'Unnamed app'),elt('div','small',a.developerName||a.category||''));
  put(head,img(a.iconURL,'appicon'),labels);
  const button=elt('button','outline','View details ↗');button.onclick=()=>detail(index);
- const more=elt('div','card-actions');more.append(button);
+ const more=elt('div','card-actions');more.append(button);const fav=elt('button','fav-action',favorites.has(favoriteKey(a))?'♥ Saved':'♡ Save');fav.setAttribute('aria-label',favorites.has(favoriteKey(a))?'Remove from favorites':'Add to favorites');fav.onclick=()=>toggleFavorite(a);more.append(fav);
  const target=url(v.downloadURL);if(target){const dl=elt('a','card-download','Get IPA ↓');dl.href=target;dl.target='_blank';dl.rel='noopener noreferrer';more.append(dl)}
  put(card,head,elt('p','',a.subtitle||a.localizedDescription||'No description available.'),elt('div','small','v'+(v.version||'—')+'   /   iOS '+(v.minOSVersion||'—')+'+'),more);
  panel.append(card);
@@ -105,7 +111,7 @@ function detail(index){
  if(shots.length){root.append(elt('h3','sectiontitle','Screenshots'));const strip=elt('div','screens');for(const s of shots.slice(0,15))strip.append(img(s,''));root.append(strip);}
  root.append(elt('h3','sectiontitle','Version history'));
  const vers=elt('div','versions');
- for(const v of Array.isArray(a.versions)?a.versions:[]){
+ for(const v of (Array.isArray(a.versions)&&a.versions.length?a.versions:[newest(a)])){
  const entry=elt('div','version'),text=elt('div');
  put(text,elt('strong','',v.version?'Version '+v.version:'Unknown version'),elt('div','small',[v.date,mb(v.size),'iOS '+(v.minOSVersion||'—')+'+'].filter(Boolean).join(' · ')));
  if(v.localizedDescription)text.append(elt('div','release',v.localizedDescription));
@@ -148,6 +154,7 @@ $('form').addEventListener('submit',e=>{e.preventDefault();load()});
 $('search').addEventListener('input',list);
 $('category').addEventListener('change',list);
 $('sort').addEventListener('change',list);
+$('favorite-filter').addEventListener('click',()=>{favoritesOnly=!favoritesOnly;$('favorite-filter').setAttribute('aria-pressed',String(favoritesOnly));$('favorite-filter').textContent=favoritesOnly?'♥ Favorites only':'♡ Favorites';list()});
 const fromLink=new URL(location.href).searchParams.get('repo');
 const initial=(fromLink&&url(fromLink))?fromLink:((savedRepo()&&url(savedRepo()))?savedRepo():DEFAULT_REPO);
 $('url').value=initial;highlightSource();load();
