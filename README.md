@@ -42,3 +42,9 @@ The inspector reads a user-selected IPA locally using JSZip, lists bundle files,
 ## Developer Utilities (v1.8.0)
 
 Open `/utilities` for React-based XML plist inspection, SHA-256 file hashing, OTA manifest creation, and a privacy manifest starter template. Files are processed locally in the browser. OTA manifests require separately signed IPA assets; generated metadata is not signing or an install guarantee. These tools do not verify signatures or malware.
+
+## Unified React frontend (v2.0.0)
+
+Routes `/` and `/tools` now use React from `app.html`; `/ipa` and `/utilities` keep their React entry files but share `src/Nav.jsx` and `src/shell.css`. Vite builds all three entries into `dist` in the Docker builder stage, and the Node server serves the compiled assets and retains the guarded `/api/repo` proxy. This deliberately keeps one Dockhand container and avoids exposing repository fetches directly to the browser.
+
+The previous standalone HTML catalog/profile source files remain in `public/` temporarily for migration reference but are no longer used by their live routes. A local production build could not be executed from this environment because outbound GitHub/DNS access was unavailable; verify the Dockhand image build before deploying to production.
