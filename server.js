@@ -6,8 +6,8 @@ const net = require('node:net');
 const fs = require('node:fs');
 const path = require('node:path');
 const PORT = Number(process.env.PORT || 3000);
-const APP_VERSION = '2.0.0';
-const BUILD_ID = '2026-11-02-react-unification';
+const APP_VERSION = '2.1.0';
+const BUILD_ID = '2026-11-02-appstore-lab';
 console.log('[RepoViewer] Version '+APP_VERSION+' | Build '+BUILD_ID+' | Node '+process.version);
 const limit = 24 * 1024 * 1024; // JSON metadata, not IPA downloads
 const MAX_APPS = 10000;
@@ -73,15 +73,19 @@ const html=fs.readFileSync(path.join(__dirname,'dist','app.html'));
 const toolsHtml=html;
 const ipaHtml=fs.readFileSync(path.join(__dirname,'dist','ipa.html'));
 const utilitiesHtml=fs.readFileSync(path.join(__dirname,'dist','utilities.html'));
+const labHtml=fs.readFileSync(path.join(__dirname,'dist','lab.html'));
+const appleLookup=async(id,country)=>new Promise((resolve,reject)=>{const target='https://itunes.apple.com/lookup?id='+encodeURIComponent(id)+'&country='+encodeURIComponent(country)+'&entity=software';const req=https.get(target,{timeout:10000,headers:{Accept:'application/json','User-Agent':'RepoViewer/2.1'}},res=>{if(res.statusCode!==200){res.resume();return reject(Error('Apple lookup returned HTTP '+res.statusCode))}const chunks=[];let n=0;res.on('data',part=>{n+=part.length;if(n>2*1024*1024){res.destroy();reject(Error('Apple lookup response is too large'))}else chunks.push(part)});res.on('end',()=>{try{const data=JSON.parse(Buffer.concat(chunks).toString('utf8'));const app=data.results?.find(x=>x.wrapperType==='software'||x.kind==='software');if(!app)return reject(Error('No app found for this ID in the selected storefront'));const allowed=['trackId','trackName','trackViewUrl','artistName','artistViewUrl','bundleId','version','minimumOsVersion','fileSizeBytes','description','releaseNotes','releaseDate','currentVersionReleaseDate','averageUserRating','userRatingCount','formattedPrice','price','currency','primaryGenreName','contentAdvisoryRating','artworkUrl100','artworkUrl512','screenshotUrls','ipadScreenshotUrls'];resolve(Object.fromEntries(allowed.filter(k=>app[k]!==undefined).map(k=>[k,app[k]])))}catch(e){reject(e)}});res.on('error',reject)});req.on('timeout',()=>req.destroy(Error('Apple lookup timed out')));req.on('error',reject)});
 http.createServer(async(req,res)=>{
   const send=(status,type,data)=>{res.writeHead(status,{'Content-Type':type,'X-Content-Type-Options':'nosniff','Referrer-Policy':'no-referrer','Cache-Control':'no-store','Content-Security-Policy':"default-src 'self'; img-src 'self' https: data:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; connect-src 'self'; base-uri 'none'; object-src 'none'"});res.end(data)};
   const u=new URL(req.url,'http://localhost');
   if(req.method!=='GET')return send(405,'text/plain','Method not allowed');
+  if(u.pathname==='/api/appstore/lookup'){const id=u.searchParams.get('id')||'',country=(u.searchParams.get('country')||'bh').toLowerCase();if(!/^\d{5,15}$/.test(id)||!/^[a-z]{2}$/.test(country))return send(400,'application/json',JSON.stringify({error:'Invalid App Store ID or country'}));try{return send(200,'application/json',JSON.stringify({app:await appleLookup(id,country)}))}catch(e){console.error('[appstore-lookup]',e.message);return send(502,'application/json',JSON.stringify({error:e.message}))}}
   if(u.pathname==='/api/repo'){
     const raw=u.searchParams.get('url');if(!raw || raw.length>2048)return send(400,'application/json',JSON.stringify({error:'Enter a valid repository URL'}));
     try{return send(200,'application/json',JSON.stringify(await fetchJson(raw)));}
     catch(e){console.error('[repo-fetch]',new Date().toISOString(),e && e.stack || e);return send(400,'application/json',JSON.stringify({error:e.message}));}
   }
+  if(u.pathname==='/appstore' || u.pathname==='/appstore.html')return send(200,'text/html; charset=utf-8',labHtml);
   if(u.pathname==='/utilities' || u.pathname==='/utilities.html')return send(200,'text/html; charset=utf-8',utilitiesHtml);
   if(u.pathname==='/ipa' || u.pathname==='/ipa.html')return send(200,'text/html; charset=utf-8',ipaHtml);
   if(u.pathname.startsWith('/assets/')){
