@@ -32,3 +32,9 @@ No database or user accounts are required. The versioned Compose image tag ensur
 Open `/tools` for four utilities: a locally generated unsigned Web Clip `.mobileconfig`, an unsigned XML configuration-profile inspector, an AltStore repository JSON checker, and curated SSL/certificate resources. Tools operate in the browser. Signed CMS and binary plist inspection, certificate signing, and profile encryption are not implemented; do not describe them as supported.
 
 The toolkit does not request private keys, collect uploaded profile files, or replace Apple's profile signing/trust verification. Use Dockhand to redeploy the `repoviewer:1.6.0` image from the latest `main` branch.
+
+## React IPA Inspector (v1.7.0)
+
+Open `/ipa` from the iOS Toolkit. React and Vite are built in the Docker multi-stage build, and the existing Node server hosts the generated page and assets in the **same single container**. No database, upload server, or persistent volume is added.
+
+The inspector reads a user-selected IPA locally using JSZip, lists bundle files, identifies the embedded provisioning-file presence, and reads **XML** `Payload/*.app/Info.plist` metadata. Binary plist detection is displayed transparently; binary plist decoding, signing verification, entitlement validation and IPA editing are **not supported yet**. Large files may consume browser memory: there is a 1 GB input cap, 30,000-entry cap and 2 MB metadata-entry cap. Do not trust repository metadata as proof of a safe or valid signature.
