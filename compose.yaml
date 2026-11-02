@@ -1,6 +1,6 @@
 services:
   repoviewer:
-    image: repoviewer:1.3.0
+    image: repoviewer:1.4.0
     build:
       context: .
       dockerfile: Dockerfile
