@@ -79,6 +79,7 @@ let runningJob=null;
 const downloadDir=process.env.IPA_DOWNLOAD_DIR||'/tmp/repoviewer-ipa';
 function workerReady(){
  if(!downloadEnabled)return {available:false,reason:'App Store download worker is disabled by the operator'};
+ if(!process.env.APPSTORE_DOWNLOAD_TOKEN || process.env.APPSTORE_DOWNLOAD_TOKEN.length<32)return {available:false,reason:'Operator API token is not configured'};
  const result=spawnSync('ipatool',['--version'],{timeout:3000,encoding:'utf8'});
  if(result.error||result.status!==0)return {available:false,reason:'ipatool executable unavailable in this container'};
  if(!fs.existsSync(downloadDir))return {available:false,reason:'Download storage is not configured'};
@@ -113,10 +114,14 @@ http.createServer(async(req,res)=>{
   if(u.pathname==='/api/appstore/worker')return send(200,'application/json',JSON.stringify(workerReady()));
   if(u.pathname==='/api/appstore/download' && req.method==='POST'){
    const readiness=workerReady();if(!readiness.available)return send(503,'application/json',JSON.stringify({error:readiness.reason}));
+   const supplied=req.headers['x-operator-token'];const expected=process.env.APPSTORE_DOWNLOAD_TOKEN;
+   if(typeof supplied!=='string'||Buffer.byteLength(supplied)!==Buffer.byteLength(expected)||!crypto.timingSafeEqual(Buffer.from(supplied),Buffer.from(expected)))return send(403,'application/json',JSON.stringify({error:'Operator authorization required'}));
    if(runningJob)return send(409,'application/json',JSON.stringify({error:'Another download is already running'}));
    let body='';req.on('data',chunk=>{body+=chunk;if(body.length>2048)req.destroy()});req.on('end',()=>{try{const parsed=JSON.parse(body),id=String(parsed.id||'');if(!/^\\d{5,15}$/.test(id))return send(400,'application/json',JSON.stringify({error:'Invalid app ID'}));return send(202,'application/json',JSON.stringify({job:queueDownload(id)}))}catch{return send(400,'application/json',JSON.stringify({error:'Invalid request'}))}});return;
   }
   if(u.pathname==='/api/appstore/job'){
+    const supplied=req.headers['x-operator-token'],expected=process.env.APPSTORE_DOWNLOAD_TOKEN||'';
+    if(!expected||typeof supplied!=='string'||Buffer.byteLength(supplied)!==Buffer.byteLength(expected)||!crypto.timingSafeEqual(Buffer.from(supplied),Buffer.from(expected)))return send(403,'application/json',JSON.stringify({error:'Operator authorization required'}));
     const job=jobs.get(u.searchParams.get('id'));return job?send(200,'application/json',JSON.stringify({job:publicJob(job)})):send(404,'application/json',JSON.stringify({error:'Job not found'}));
   }
   if(req.method!=='GET')return send(405,'text/plain','Method not allowed');
