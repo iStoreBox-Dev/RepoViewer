@@ -1,0 +1,16 @@
+services:
+  repoviewer:
+    build: .
+    container_name: repoviewer
+    restart: unless-stopped
+    ports:
+      - "8088:3000"
+    environment:
+      PORT: "3000"
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    read_only: true
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,size=16m
