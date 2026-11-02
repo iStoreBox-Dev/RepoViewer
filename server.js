@@ -5,9 +5,11 @@ const dns = require('node:dns');
 const net = require('node:net');
 const fs = require('node:fs');
 const path = require('node:path');
+const {spawnSync,spawn}=require('node:child_process');
+const crypto=require('node:crypto');
 const PORT = Number(process.env.PORT || 3000);
-const APP_VERSION = '2.3.0';
-const BUILD_ID = '2026-11-02-local-ipa-companion';
+const APP_VERSION = '2.4.0';
+const BUILD_ID = '2026-11-02-download-jobs';
 console.log('[RepoViewer] Version '+APP_VERSION+' | Build '+BUILD_ID+' | Node '+process.version);
 const limit = 24 * 1024 * 1024; // JSON metadata, not IPA downloads
 const MAX_APPS = 10000;
@@ -69,6 +71,36 @@ async function fetchJson(raw, redirects=0){
     req.on('error',reject);
   });
 }
+
+const downloadEnabled=process.env.APPSTORE_DOWNLOAD_ENABLED==='true';
+const jobLimit=20;
+const jobs=new Map();
+let runningJob=null;
+const downloadDir=process.env.IPA_DOWNLOAD_DIR||'/tmp/repoviewer-ipa';
+function workerReady(){
+ if(!downloadEnabled)return {available:false,reason:'App Store download worker is disabled by the operator'};
+ const result=spawnSync('ipatool',['--version'],{timeout:3000,encoding:'utf8'});
+ if(result.error||result.status!==0)return {available:false,reason:'ipatool executable unavailable in this container'};
+ if(!fs.existsSync(downloadDir))return {available:false,reason:'Download storage is not configured'};
+ return {available:true,reason:'Local ipatool executable detected. Apple account authorization must be configured separately.'};
+}
+function publicJob(job){return {id:job.id,appId:job.appId,status:job.status,createdAt:job.createdAt,updatedAt:job.updatedAt,error:job.error||null,filename:job.filename||null}}
+function startJob(job){
+ runningJob=job.id;job.status='running';job.updatedAt=Date.now();
+ const file=job.appId+'-'+job.id+'.ipa';
+ const out=path.join(downloadDir,file);
+ const child=spawn('ipatool',['download','-i',job.appId,'-o',out],{cwd:downloadDir,env:{...process.env,HOME:process.env.IPATOOL_HOME||'/tmp/ipatool'},stdio:['ignore','ignore','pipe']});
+ let stderr='';
+ child.stderr.on('data',part=>{stderr=(stderr+String(part)).slice(-1000)});
+ child.on('error',err=>{job.status='failed';job.error='Downloader process could not start';job.updatedAt=Date.now();runningJob=null});
+ child.on('close',code=>{if(job.status==='failed')return;job.updatedAt=Date.now();runningJob=null;if(code===0&&fs.existsSync(out)){job.status='complete';job.filename=file}else{job.status='failed';job.error='Download failed. Check worker authorization and environment.';try{fs.unlinkSync(out)}catch{}}});
+}
+function queueDownload(appId){
+ if(jobs.size>=jobLimit){for(const [id,j] of jobs){if(j.status!=='running'){jobs.delete(id);break}}}
+ const id=crypto.randomUUID();const job={id,appId,status:'queued',createdAt:Date.now(),updatedAt:Date.now()};
+ jobs.set(id,job);startJob(job);return publicJob(job);
+}
+
 const html=fs.readFileSync(path.join(__dirname,'dist','app.html'));
 const toolsHtml=html;
 const ipaHtml=fs.readFileSync(path.join(__dirname,'dist','ipa.html'));
@@ -78,6 +110,15 @@ const appleLookup=async(id,country)=>new Promise((resolve,reject)=>{const target
 http.createServer(async(req,res)=>{
   const send=(status,type,data)=>{res.writeHead(status,{'Content-Type':type,'X-Content-Type-Options':'nosniff','Referrer-Policy':'no-referrer','Cache-Control':'no-store','Content-Security-Policy':"default-src 'self'; img-src 'self' https: data:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; connect-src 'self'; base-uri 'none'; object-src 'none'"});res.end(data)};
   const u=new URL(req.url,'http://localhost');
+  if(u.pathname==='/api/appstore/worker')return send(200,'application/json',JSON.stringify(workerReady()));
+  if(u.pathname==='/api/appstore/download' && req.method==='POST'){
+   const readiness=workerReady();if(!readiness.available)return send(503,'application/json',JSON.stringify({error:readiness.reason}));
+   if(runningJob)return send(409,'application/json',JSON.stringify({error:'Another download is already running'}));
+   let body='';req.on('data',chunk=>{body+=chunk;if(body.length>2048)req.destroy()});req.on('end',()=>{try{const parsed=JSON.parse(body),id=String(parsed.id||'');if(!/^\\d{5,15}$/.test(id))return send(400,'application/json',JSON.stringify({error:'Invalid app ID'}));return send(202,'application/json',JSON.stringify({job:queueDownload(id)}))}catch{return send(400,'application/json',JSON.stringify({error:'Invalid request'}))}});return;
+  }
+  if(u.pathname==='/api/appstore/job'){
+    const job=jobs.get(u.searchParams.get('id'));return job?send(200,'application/json',JSON.stringify({job:publicJob(job)})):send(404,'application/json',JSON.stringify({error:'Job not found'}));
+  }
   if(req.method!=='GET')return send(405,'text/plain','Method not allowed');
   if(u.pathname==='/api/appstore/lookup'){const id=u.searchParams.get('id')||'',country=(u.searchParams.get('country')||'bh').toLowerCase();if(!/^\d{5,15}$/.test(id)||!/^[a-z]{2}$/.test(country))return send(400,'application/json',JSON.stringify({error:'Invalid App Store ID or country'}));try{return send(200,'application/json',JSON.stringify({app:await appleLookup(id,country)}))}catch(e){console.error('[appstore-lookup]',e.message);return send(502,'application/json',JSON.stringify({error:e.message}))}}
   if(u.pathname==='/api/repo'){
